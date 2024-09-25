@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lamp : MonoBehaviour
+public class Fire : MonoBehaviour
 {
     private Light m_light;
     public AnimationCurve m_curve;
     [SerializeField]
     private bool startAnim=false;
-    private bool playaClose;
 
     public float duration;
     public float initialIntensity;
@@ -22,6 +21,7 @@ public class Lamp : MonoBehaviour
 
         m_curve.preWrapMode=WrapMode.PingPong;
         m_curve.postWrapMode=WrapMode.PingPong;
+        m_light.intensity=initialIntensity;
         
     }
 
@@ -29,31 +29,26 @@ public class Lamp : MonoBehaviour
     void Update()
     {        
         if(startAnim){
-            playaClose=true;
             elapsedTime=0f;
-            startAnim=false;  
+            startAnim=false;    
+            m_light.intensity=initialIntensity;      
         }
         AnimTrig();
     }
 
     void AnimTrig(){
-        if(playaClose){
             elapsedTime+=Time.deltaTime;  
-            float flicker=m_curve.Evaluate(elapsedTime);   
-            if(elapsedTime<duration){    
+            float flicker=m_curve.Evaluate(elapsedTime); 
+            if(elapsedTime<duration){          
                 m_light.intensity+=flicker;
             } 
             if(elapsedTime>duration){
                 if(m_light.intensity>initialIntensity){
                     m_light.intensity-=flicker;
                 }
-            }         
-        }
-    }
-
-    private void OnTriggerEnter(Collider coll){
-        if(coll.gameObject.tag=="Player"){
-            startAnim=true;
-        }
+                if(m_light.intensity<=initialIntensity){
+                    startAnim=true;
+                }
+            }       
     }
 }
