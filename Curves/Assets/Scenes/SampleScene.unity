@@ -794,6 +794,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  speed: 1
 --- !u!1 &1653720581
 GameObject:
   m_ObjectHideFlags: 0
@@ -1000,8 +1001,8 @@ SphereCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 2.53
-  m_Center: {x: -0.02, y: 0.04, z: 2.22}
+  m_Radius: 6.7
+  m_Center: {x: -0.020000044, y: 0, z: -0.53}
 --- !u!1 &1744612037
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,15 +7,16 @@ public class Cam : MonoBehaviour
     private Transform target;
     public AnimationCurve pitchCurve;
     public AnimationCurve distanceCurve;
+    public float speed;
 
     void Start(){
         target=GameObject.FindGameObjectWithTag("Player").transform;
-        pitchCurve=AnimationCurve.EaseInOut(0.0f,0.0f,1.0f,90.0f);
+        pitchCurve=AnimationCurve.EaseInOut(0.0f,79.0f,1.0f,15f);
 
         Keyframe[] ks=new Keyframe[2];
-        ks[0]=new Keyframe(0,0.5f);
+        ks[0]=new Keyframe(0,60f);
         ks[0].outTangent=0;
-        ks[1]=new Keyframe(1,60);
+        ks[1]=new Keyframe(1f,5f);
         ks[1].inTangent=90;
         distanceCurve=new AnimationCurve(ks);
     }
@@ -27,8 +28,9 @@ public class Cam : MonoBehaviour
         Quaternion targetRot = Quaternion.Euler(targetRotX, targetRotY, 0.0f);
         Vector3 offset = Vector3.forward * distanceCurve.Evaluate(distance);
         Vector3 targetPos = target.position - targetRot * offset;
-        transform.position=Vector3.Lerp(transform.position,targetPos,distance);
-        transform.rotation=Quaternion.Slerp(transform.rotation,targetRot,distance);
+        
+        transform.position=Vector3.Lerp(transform.position,targetPos,speed);
+        transform.rotation=Quaternion.Slerp(transform.rotation,targetRot,speed);
     }
 
 }
