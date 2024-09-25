@@ -21,16 +21,18 @@ public class Cam : MonoBehaviour
         distanceCurve=new AnimationCurve(ks);
     }
 
-    void Update(){
+    void FixedUpdate(){
         float distance=Vector3.Distance(transform.position,target.position);
         float targetRotX = pitchCurve.Evaluate(distance);
         float targetRotY = target.rotation.eulerAngles.y;
         Quaternion targetRot = Quaternion.Euler(targetRotX, targetRotY, 0.0f);
         Vector3 offset = Vector3.forward * distanceCurve.Evaluate(distance);
         Vector3 targetPos = target.position - targetRot * offset;
-        
-        transform.position=Vector3.Lerp(transform.position,targetPos,speed);
-        transform.rotation=Quaternion.Slerp(transform.rotation,targetRot,speed);
+        if(distance!=5){
+            float tVar=distanceCurve.Evaluate(distance);
+            transform.position=Vector3.Lerp(transform.position,targetPos,tVar*Time.deltaTime);
+            transform.rotation=Quaternion.Slerp(transform.rotation,targetRot,targetRotX*Time.deltaTime);
+        }
     }
 
 }
