@@ -17,15 +17,17 @@ public class Flock : MonoBehaviour
             }else if(boid.s_ID==4){
                 boid.s_ID=Random.Range(1,3);
             }
+            boid.assignColor();
         }
+        
     }
 
     void FixedUpdate()
     {
         for(int i=0;i<boids.Length;i++){
-            Separate();
+            //Separate(boids[i], boids);
             //Align();
-            //Cohesion();
+            Cohesion(boids[i], boids);
             if(boids[i].s_ID==4){
                 Hunt();
             }else{
@@ -34,9 +36,7 @@ public class Flock : MonoBehaviour
         }
     }
 
-    void Separate(){
-        foreach (var boid in boids)
-        {
+    void Separate(Boid boid, Boid[] boids){
             Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
@@ -55,11 +55,8 @@ public class Flock : MonoBehaviour
             else
             {
                 center /= count;
+                boid.s_acceleration = (boid.transform.position - center)*2f;
             }
-
-            boid.s_acceleration = boid.transform.position - center;
-            boid.s_acceleration += -boid.transform.position * 0.2f;
-        }
     }
 
     void Align(){
@@ -91,14 +88,13 @@ public class Flock : MonoBehaviour
         }
     }
 
-    void Cohesion(){
-        foreach (var boid in boids)
-        {
+    void Cohesion(Boid boid, Boid[] boids){
             Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
-            {                
-                if (other.s_ID== boid.s_ID)
+            {     
+                float distance = Vector3.Distance(boid.transform.position, other.transform.position);           
+                if (other.s_ID== boid.s_ID && distance<1f)
                 {
                     center += other.transform.position;
                     count++;
@@ -111,11 +107,9 @@ public class Flock : MonoBehaviour
             else
             {
                 center /= count;
+                boid.s_acceleration = (boid.transform.position + center)*2f;
             }
 
-            boid.s_acceleration = boid.transform.position - center;
-            boid.s_acceleration += boid.transform.position * 0.2f;
-        }
     }
 
     void Hunt(){
