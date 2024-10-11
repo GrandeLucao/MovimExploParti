@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Flock : MonoBehaviour
@@ -25,13 +24,13 @@ public class Flock : MonoBehaviour
     void FixedUpdate()
     {
         for(int i=0;i<boids.Length;i++){
-            //Separate(boids[i], boids);
-            //Align();
+            Separate(boids[i], boids);
+            Align(boids[i], boids);
             Cohesion(boids[i], boids);
             if(boids[i].s_ID==4){
-                Hunt();
+                Hunt(boids[i], boids);
             }else{
-                Flee();
+                Flee(boids[i], boids);
             }
         }
     }
@@ -54,38 +53,35 @@ public class Flock : MonoBehaviour
             }
             else
             {
+                boid.s_acceleration=Vector3.zero;
                 center /= count;
-                boid.s_acceleration = (boid.transform.position - center)*2f;
+                boid.s_acceleration += (boid.transform.position - center)*2f;
             }
     }
 
-    void Align(){
-        foreach (var boid in boids)
-        {
+    void Align(Boid boid, Boid[] boids){
             Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
             {
                 float distance = Vector3.Distance(other.transform.position, boid.transform.position);
-                if (other.s_ID == boid.s_ID )
+                if (other.s_ID == boid.s_ID && distance<2f)
                 {
-                    center += other.transform.position;
-                    boid.s_velocity=other.s_velocity;
+                    center += other.s_velocity;
                     count++;
                 }
             }
             if (count == 0)
             {
-                center = boid.transform.position;
+                center = boid.s_velocity;
             }
             else
             {
+                boid.s_acceleration=Vector3.zero;
                 center /= count;
+                boid.s_acceleration += (boid.s_velocity + center)*2f;
             }
 
-            boid.s_acceleration = boid.transform.position - center;
-            boid.s_acceleration += -boid.transform.position * 0.2f;
-        }
     }
 
     void Cohesion(Boid boid, Boid[] boids){
@@ -94,7 +90,7 @@ public class Flock : MonoBehaviour
             foreach (var other in boids)
             {     
                 float distance = Vector3.Distance(boid.transform.position, other.transform.position);           
-                if (other.s_ID== boid.s_ID && distance<1f)
+                if (other.s_ID== boid.s_ID && distance<2f)
                 {
                     center += other.transform.position;
                     count++;
@@ -106,17 +102,60 @@ public class Flock : MonoBehaviour
             }
             else
             {
+                boid.s_acceleration=Vector3.zero;
                 center /= count;
-                boid.s_acceleration = (boid.transform.position + center)*2f;
+                boid.s_acceleration += (center -boid.transform.position )*2f;
             }
 
     }
 
-    void Hunt(){
+    void Hunt(Boid boid, Boid[] boids){
+            Vector3 center = Vector3.zero;
+            int count = 0;
+            foreach (var other in boids)
+            {     
+                float distance = Vector3.Distance(boid.transform.position, other.transform.position);           
+                if (other.s_ID!= boid.s_ID && distance<11f)
+                {
+                    center += other.transform.position;
+                    count++;
+                }
+            }
+            if (count == 0)
+            {
+                center = boid.transform.position;
+            }
+            else
+            {
+                boid.s_acceleration=Vector3.zero;
+                center /= count;
+                boid.s_acceleration += (center -boid.transform.position )*2f;
+            }
 
     }
 
-    void Flee(){
+    void Flee(Boid boid, Boid[] boids){
+        Vector3 center = Vector3.zero;
+            int count = 0;
+            foreach (var other in boids)
+            {
+                float distance = Vector3.Distance(other.transform.position, boid.transform.position);
+                if (other.s_ID== 4 && distance < 3f)
+                {
+                    center += other.transform.position;
+                    count++;
+                }
+            }
+            if (count == 0)
+            {
+                center = boid.transform.position;
+            }
+            else
+            {
+                boid.s_acceleration=Vector3.zero;
+                center /= count;
+                boid.s_acceleration += (boid.transform.position - center)*2f;
+            }
 
     }
 }
