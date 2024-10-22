@@ -4,6 +4,8 @@ using UnityEngine;
 public class Flock : MonoBehaviour
 {
     Boid[] boids;
+    public float SepSpeed,AliSpeed,CohSpeed,HuntSpeed,FleeSpeed;
+    private float minX,minY,maxX,maxY;
 
     private void Start()
     {
@@ -18,24 +20,26 @@ public class Flock : MonoBehaviour
             }
             boid.assignColor();
         }
+        setBounds(-10,10,-10,10);
         
     }
 
     void FixedUpdate()
     {
         for(int i=0;i<boids.Length;i++){
-            Separate(boids[i], boids);
-            Align(boids[i], boids);
-            Cohesion(boids[i], boids);
+            Separate(boids[i], boids,SepSpeed);
+            Align(boids[i], boids,AliSpeed);
+            Cohesion(boids[i], boids,CohSpeed);
             if(boids[i].s_ID==4){
-                Hunt(boids[i], boids);
+                Hunt(boids[i], boids,HuntSpeed);
             }else{
-                Flee(boids[i], boids);
+                Flee(boids[i], boids,FleeSpeed);
             }
+            checkBounds(boids[i]);
         }
     }
 
-    void Separate(Boid boid, Boid[] boids){
+    void Separate(Boid boid, Boid[] boids,float speed){
             Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
@@ -55,11 +59,11 @@ public class Flock : MonoBehaviour
             {
                 boid.s_acceleration=Vector3.zero;
                 center /= count;
-                boid.s_acceleration += (boid.transform.position - center)*2f;
+                boid.s_acceleration += (boid.transform.position - center)*speed;
             }
     }
 
-    void Align(Boid boid, Boid[] boids){
+    void Align(Boid boid, Boid[] boids,float speed){
             Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
@@ -79,12 +83,12 @@ public class Flock : MonoBehaviour
             {
                 boid.s_acceleration=Vector3.zero;
                 center /= count;
-                boid.s_acceleration += (boid.s_velocity + center)*2f;
+                boid.s_acceleration += (boid.s_velocity + center)*speed;
             }
 
     }
 
-    void Cohesion(Boid boid, Boid[] boids){
+    void Cohesion(Boid boid, Boid[] boids,float speed){
             Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
@@ -104,12 +108,12 @@ public class Flock : MonoBehaviour
             {
                 boid.s_acceleration=Vector3.zero;
                 center /= count;
-                boid.s_acceleration += (center -boid.transform.position )*2f;
+                boid.s_acceleration += (center -boid.transform.position )*speed;
             }
 
     }
 
-    void Hunt(Boid boid, Boid[] boids){
+    void Hunt(Boid boid, Boid[] boids,float speed){
             Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
@@ -129,12 +133,12 @@ public class Flock : MonoBehaviour
             {
                 boid.s_acceleration=Vector3.zero;
                 center /= count;
-                boid.s_acceleration += (center -boid.transform.position )*2f;
+                boid.s_acceleration += (center -boid.transform.position )*speed;
             }
 
     }
 
-    void Flee(Boid boid, Boid[] boids){
+    void Flee(Boid boid, Boid[] boids,float speed){
         Vector3 center = Vector3.zero;
             int count = 0;
             foreach (var other in boids)
@@ -154,8 +158,33 @@ public class Flock : MonoBehaviour
             {
                 boid.s_acceleration=Vector3.zero;
                 center /= count;
-                boid.s_acceleration += (boid.transform.position - center)*2f;
+                boid.s_acceleration += (boid.transform.position - center)*speed;
             }
 
+    }
+
+    void setBounds(float minX,float maxX,float minY,float maxY){
+        this.minX=minX;
+        this.maxX=maxX;
+        this.minY=minY;
+        this.maxY=maxY;
+    }
+
+    void checkBounds(Boid boids){
+        float boundsWidth=maxX-minX;
+        float boundsHeight=maxY-minY;
+        if(boids.transform.position.x>maxX){
+            boids.transform.position-=new Vector3(boundsWidth,boids.transform.position.y,0);
+        }
+        if(boids.transform.position.x<minX){
+            boids.transform.position+=new Vector3(boundsWidth,boids.transform.position.y,0);
+        }
+        if(boids.transform.position.y>maxY){
+            boids.transform.position-=new Vector3(boids.transform.position.x,boundsHeight,0);
+
+        }
+        if(boids.transform.position.y<minY){
+            boids.transform.position+=new Vector3(boids.transform.position.x,boundsHeight,0);
+        }
     }
 }
