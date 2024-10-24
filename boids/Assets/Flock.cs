@@ -174,17 +174,16 @@ public class Flock : MonoBehaviour
         float boundsWidth=maxX-minX;
         float boundsHeight=maxY-minY;
         if(boids.transform.position.x>maxX){
-            boids.transform.position-=new Vector3(boundsWidth,boids.transform.position.y,0);
+            boids.transform.position-=new Vector3(boundsWidth,0,0);
         }
         if(boids.transform.position.x<minX){
-            boids.transform.position+=new Vector3(boundsWidth,boids.transform.position.y,0);
+            boids.transform.position+=new Vector3(boundsWidth,0,0);
         }
         if(boids.transform.position.y>maxY){
-            boids.transform.position-=new Vector3(boids.transform.position.x,boundsHeight,0);
-
+            boids.transform.position-=new Vector3(0,boundsHeight,0);
         }
         if(boids.transform.position.y<minY){
-            boids.transform.position+=new Vector3(boids.transform.position.x,boundsHeight,0);
+            boids.transform.position+=new Vector3(0,boundsHeight,0);
         }
     }
 }
